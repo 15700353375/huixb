@@ -1,0 +1,83 @@
+/**
+ * @Author:      changh
+ * @DateTime:    2018-05-28
+ * @Description: topBar样式
+ **/
+
+.topBar {
+  position: relative;
+  // overflow: hidden;
+  .menue {
+    height: 60px;
+    line-height: 60px;
+    border-bottom: 1px solid #d4dce7;
+    background-color: #f9fafc;
+    .navChange {
+      padding: 0 20px;
+      color: #314057;
+      font-size: 32px;
+      float: left;
+    }
+    .bread_top{
+      float: left;
+      line-height: 60px;
+      font-size: 16px;
+    }    
+    .pull-right{
+      float: right;
+      padding: 0 20px;
+      height: 60px;
+      overflow: hidden;
+      .ivu-tooltip-popper, .ivu-select-dropdown{
+        top: 40px!important;
+      }
+      .header-button{
+        float: left;
+        margin-right: 10px;
+        .userImg{
+          width: 40px;
+          border-radius: 50%;
+          margin-top: 10px;
+        }
+      }
+    }
+  }
+  .bread{      
+    height: 39px;
+    width: 100%;
+    box-sizing: border-box;
+    line-height: 39px;
+    border-bottom: 1px solid #d4dce7;
+    // box-sizing: border-box;
+    position: relative;
+    .bread_main{
+      overflow: hidden;
+      height: 39px;
+      overflow: hidden;
+      margin-right: 90px;
+      position: relative;
+    }
+    .bread_con{
+      height: 40px;
+      position: absolute;
+      z-index: 0;
+      left: 0px;
+      // overflow-x: auto;
+      .ivu-tag{
+        float: left;
+      }
+    }
+    .tag_oper{
+      position: absolute;
+      right: 10px;
+      top: 0px;
+      width: 80px;
+      // margin-right: 10px;
+    }
+  }
+}
+
+.content{
+  width: 100%;
+  min-height: 300px;
+}

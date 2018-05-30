@@ -1,0 +1,83 @@
+@font-face {
+  font-family: 'zm-agent';
+  src:  url('fonts/zm-agent.eot?q1f6io');
+  src:  url('fonts/zm-agent.eot?q1f6io#iefix') format('embedded-opentype'),
+    url('fonts/zm-agent.ttf?q1f6io') format('truetype'),
+    url('fonts/zm-agent.woff?q1f6io') format('woff'),
+    url('fonts/zm-agent.svg?q1f6io#zm-agent') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="agent-"], [class*=" agent-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'zm-agent' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.agent-common_icon_success:before {
+  content: "\e903";
+}
+.agent-Pop-up_icon_notice:before {
+  content: "\e912";
+}
+.agent-common_icon_empower:before {
+  content: "\e904";
+}
+.agent-common_icon_loading:before {
+  content: "\e905";
+}
+.agent-common_icon_me:before {
+  content: "\e906";
+}
+.agent-common_icon_report_forms:before {
+  content: "\e907";
+}
+.agent-common_icon_set-up:before {
+  content: "\e908";
+}
+.agent-common_icon_staff:before {
+  content: "\e909";
+}
+.agent-common_icon_warehouse:before {
+  content: "\e90a";
+}
+.agent-empower_icon_appreciation:before {
+  content: "\e90b";
+}
+.agent-empower_icon_client_number:before {
+  content: "\e90c";
+}
+.agent-empower_icon_standard:before {
+  content: "\e90d";
+}
+.agent-login_icon_identifying_code:before {
+  content: "\e90e";
+}
+.agent-login_icon_password:before {
+  content: "\e90f";
+}
+.agent-login_icon_phone:before {
+  content: "\e910";
+}
+.agent-common_icon_error_tip:before {
+  content: "\e902";
+}
+.agent-Pop-up_icon_close:before {
+  content: "\e911";
+}
+.agent-common_icon_add:before {
+  content: "\e900";
+}
+.agent-common_icon_search:before {
+  content: "\e901";
+}
