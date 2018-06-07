@@ -1,23 +1,18 @@
 /* eslint-disable */
-import { webim } from './webim'
-import store from '../../../store'
-import { addMsg } from './chat_index'
-import { $ } from './jquery'
+import { webim } from './js/webim'
+import { mapState } from 'vuex';
+import { addMsg } from './show_one_msg'
 
 // 弹出发图对话框
 function selectPicClick () {
+  
   // 判断浏览器版本
   if (webim.BROWSER_INFO.type === 'ie' && parseInt(webim.BROWSER_INFO.ver) <= 9) {
     // if(1==1){
     // $('#updli_form')[0].reset()
-    store.state.chat.sendPic = true
+    app.$store.state.chat.sendPic = true
   } else {
-    // $('#upd_form')[0].reset()
-    var preDiv = document.getElementById('previewPicDiv')
-    preDiv.innerHTML = ''
-    // var progress = document.getElementById('upd_progress') // 上传图片进度条
-    // progress.value = 0
-    store.state.chat.sendPic = true
+    app.$store.state.chat.sendPic = true
   }
 }
 // 选择图片触发事件
@@ -26,6 +21,7 @@ function fileOnChange (uploadFile) {
     console.log('您的浏览器不支持File Api')
     return
   }
+  
   var file = uploadFile.files[0]
   var fileSize = file.size
   // 先检查图片类型和大小
@@ -64,9 +60,9 @@ function uploadPic () {
   var uploadFiles = document.getElementById('upd_pic')
   var file = uploadFiles.files[0]
   var businessType // 业务类型，1-发群图片，2-向好友发图片
-  if (store.state.chat.selType === webim.SESSION_TYPE.C2C) { // 向好友发图片
+  if (app.$store.state.chat.selType === webim.SESSION_TYPE.C2C) { // 向好友发图片
     businessType = webim.UPLOAD_PIC_BUSSINESS_TYPE.C2C_MSG
-  } else if (store.state.chat.selType == webim.SESSION_TYPE.GROUP) { // 发群图片
+  } else if (app.$store.state.chat.selType == webim.SESSION_TYPE.GROUP) { // 发群图片
     businessType = webim.UPLOAD_PIC_BUSSINESS_TYPE.GROUP_MSG
   }
   // 封装上传图片请求
@@ -74,7 +70,7 @@ function uploadPic () {
     'file': file, // 图片对象
     'onProgressCallBack': onProgressCallBack, // 上传图片进度条回调函数
     // 'abortButton': document.getElementById('upd_abort'), // 停止上传图片按钮
-    'To_Account': store.state.chat.selToID, // 接收者
+    'To_Account': app.$store.state.chat.selToID, // 接收者
     'businessType': businessType // 业务类型
   }
   // 上传图片
@@ -94,26 +90,26 @@ function uploadPic () {
 // 上传图片(用于低版本IE)
 function uploadPicLowIE () {
   var businessType // 业务类型，1-发群图片，2-向好友发图片
-  if (store.state.chat.selType === webim.SESSION_TYPE.C2C) { // 向好友发图片
+  if (app.$store.state.selType === webim.SESSION_TYPE.C2C) { // 向好友发图片
     businessType = webim.UPLOAD_PIC_BUSSINESS_TYPE.C2C_MSG
-  } else if (store.state.chat.selType === webim.SESSION_TYPE.GROUP) { // 发群图片
+  } else if (app.$store.state.selType === webim.SESSION_TYPE.GROUP) { // 发群图片
     businessType = webim.UPLOAD_PIC_BUSSINESS_TYPE.GROUP_MSG
   }
   // 封装上传图片请求
   var opt = {
     'formId': 'updli_form', // 上传图片表单id
     'fileId': 'updli_file', // file控件id
-    'To_Account': store.state.chat.selToID, // 接收者
+    'To_Account': app.$store.state.selToID, // 接收者
     'businessType': businessType // 图片的使用业务类型
   }
   webim.submitUploadFileForm(opt,
     function (resp) {
-      store.state.chat.sendPic = false
+      app.$store.state.sendPic = false
       // 发送图片
       sendPic(resp)
     },
     function (err) {
-      store.state.chat.sendPic = false
+      app.$store.state.sendPic = false
       console.log(err.ErrorInfo)
     }
   )
@@ -122,14 +118,14 @@ function uploadPicLowIE () {
 // 上传图片(通过base64编码)
 function uploadPicByBase64 () {
   var businessType // 业务类型，1-发群图片，2-向好友发图片
-  if (store.state.chat.selType === webim.SESSION_TYPE.C2C) { // 向好友发图片
+  if (app.$store.state.selType === webim.SESSION_TYPE.C2C) { // 向好友发图片
     businessType = webim.UPLOAD_PIC_BUSSINESS_TYPE.C2C_MSG
-  } else if (store.state.chat.selType === webim.SESSION_TYPE.GROUP) { // 发群图片
+  } else if (app.$store.state.selType === webim.SESSION_TYPE.GROUP) { // 发群图片
     businessType = webim.UPLOAD_PIC_BUSSINESS_TYPE.GROUP_MSG
   }
   // 封装上传图片请求
   var opt = {
-    'toAccount': store.state.chat.selToID, // 接收者
+    'toAccount': app.$store.state.selToID, // 接收者
     'businessType': businessType, // 图片的使用业务类型
     'fileMd5': '6f25dc54dc2cd47375e8b43045de642a', // 图片md5
     'totalSize': 56805, // 图片大小,Byte
@@ -148,14 +144,14 @@ function uploadPicByBase64 () {
 }
 // 发送图片消息
 function sendPic (images,imgName) {
-  if (!store.state.chat.selToID) {
+  if (!app.$store.state.chat.selToID) {
     console.log('您还没有好友，暂不能聊天')
     return
   }
-  if (!store.state.chat.selSess) {
-    store.state.chat.selSess = new webim.Session(store.state.chat.selType, store.state.chat.selToID, store.state.chat.selToID, store.state.chat.friendHeadUrl, Math.round(new Date().getTime() / 1000))
+  if (!app.$store.state.chat.selSess) {
+    app.$store.state.chat.selSess = new webim.Session(app.$store.state.chat.selType, app.$store.state.chat.selToID, app.$store.state.chat.selToID, app.$store.state.chat.friendHeadUrl, Math.round(new Date().getTime() / 1000))
   }
-  var msg = new webim.Msg(store.state.chat.selSess, true, -1, -1, -1, store.state.chat.loginInfo.identifier, 0, store.state.chat.loginInfo.identifierNick)
+  var msg = new webim.Msg(app.$store.state.chat.selSess, true, -1, -1, -1, app.$store.state.chat.loginInfo.identifier, 0, app.$store.state.chat.loginInfo.identifierNick)
   var images_obj = new webim.Msg.Elem.Images(images.File_UUID)
   for (var i in images.URL_INFO) {
     var img = images.URL_INFO[i]
@@ -184,8 +180,9 @@ function sendPic (images,imgName) {
   // 调用发送图片消息接口
   webim.sendMsg(msg, function (resp) {
     console.log('图片发送成功')
-    store.state.chat.sendPic = false
-    if (store.state.chat.selType === webim.SESSION_TYPE.C2C) { // 私聊时，在聊天窗口手动添加一条发的消息，群聊时，长轮询接口会返回自己发的消息
+    app.$store.state.chat.sendPic = false
+    
+    if (app.$store.state.chat.selType === webim.SESSION_TYPE.C2C) { // 私聊时，在聊天窗口手动添加一条发的消息，群聊时，长轮询接口会返回自己发的消息
       addMsg(msg)
     }
   }, function (err) {

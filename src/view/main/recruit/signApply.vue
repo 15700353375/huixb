@@ -7,76 +7,26 @@
 <template>
   <div class="main_module">
     <!-- 计算 -->
-    <div class="displayNone">{{changeParmas}} {{changePages}}</div>
+    <div class="displayNone">{{changeParmas}}</div>
     <!-- 表格的筛选信息 -->
 
     <!-- 机构和站点 -->
-    <div class="table_select">
-      <Select v-model="organization" class="selcet_default" placeholder='请选择机构'>
-        <Option v-for="item in organizationList" :value="item.schoolId" :key="item.schoolId">{{ item.schoolName }}</Option>
-      </Select>
-      <Select v-model="site_id" class='selcet_default' placeholder='请选择站点'>
-        <Option v-for="item in siteList" :value="item.siteId" :key="item.siteId">{{ item.siteName }}</Option>
-      </Select>
-
-    <!-- 选择报名信息 -->
-      <Select v-model="registrationType" class="selcet_default" placeholder='请选择报名类型'>
-        <Option v-for="item in registrationTypes" :value="item.value" :key="item.value">{{ item.label }}</Option>
-      </Select>
-      <Select v-model="course" class='selcet_default' placeholder='请选择专业/课程'>
-        <Option v-for="item in courses" :value="item.no" :key="item.no">{{ item.name }}</Option>
-      </Select>
-
-      <!-- 选择批次号 -->
-      <Select v-model="batch" class='selcet_default' placeholder='请选择批次号'>
-        <Option v-for="item in batchList" :value="item.id" :key="item.id">{{ item.name }}</Option>
-      </Select>
-
-      <!-- 选择是否分班 -->
-      <Select v-model="isClass" class='selcet_default' placeholder='请选择分班'>
-        <Option v-for="item in classList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-      </Select>
-
-      <!-- 选择班主任 -->
-      <Select v-model="classTeacher" class="selcet_default" placeholder='请选择班主任'>
-        <Option v-for="item in classTeacherList" :value="item.uid" :key="item.uid">{{ item.name }}</Option>
-      </Select>
-
-      <!-- 选择招生人员 -->
-      <Select v-model="recruit" class='selcet_default' placeholder='请选择招生人员'>
-        <Option v-for="item in recruitList" :value="item.uid" :key="item.uid">{{ item.name }}</Option>
-      </Select>
-
-      <Button type="primary" @click="getList">查询</Button>
-
-      <div class="clearfix">
-        <Button type="primary" @click="addStudent">新增学生</Button>
-        <Button type="primary" @click="exportStudent">导出</Button>
-      </div>
+    <div class="table_select clearfix">
+      <Button type="primary" @click="addStudent">添加单个学生</Button>
+      <Button type="primary" @click="exportStudent">批量导入学生</Button>
+      <Button type="primary" @click="getList">下载模板</Button>
+      <Button type="primary" @click="getList">确认</Button>
+      <Button type="primary" @click="getList">返回</Button>
     </div>
 
     <Table class="hxb_table" 
             size='default' 
-            min-width='1000'
             border 
             :columns="column_head" 
             :data="column_data"></Table>
     <!-- <div class="notData">暂无数据</div> -->
     <Page show-sizer show-elevator show-total :total="page.total" :page-size='page.pageSize' @on-change='pageChange' @on-page-size-change='sizeChange'></Page>
-
-    <changeClass v-if="dialogs.isChangeClass" 
-                :classTeacherList='classTeacherList' 
-                :studentInfo='studentInfo' 
-                @classClose='classClose'>
-    </changeClass>
-
-    <!-- <changeSite v-if="dialogs.ischangeSite" 
-                :siteList='siteList' 
-                :studentInfo='studentInfo' 
-                @siteClose='ischangeSite=false'>
-    </changeSite> -->
-    
-    <pay v-if="dialogs.pay" :payData='payData' @payClose='payClose' @checkStatus='checkStatus'></pay>
+    <changeClass v-if="dialogs.isChangeClass"></changeClass>
   </div>
 </template>
 
@@ -85,8 +35,6 @@
   import { mapState } from 'vuex';
   
   import changeClass from '@Components/changeClass';
-  import changeSite from '@Components/changeSite';
-  import pay from '@Components/pay';
   export default {
     data(){
       return {
@@ -101,69 +49,77 @@
               title: '姓名',
               key: 'name',
               align:'center',
-              minWidth: 100,
-              fixed: 'left'
+          },
+          {
+              title: '民族',
+              key: 'name',
+              align:'center',
           },
           {
               title: '身份证',
               key: 'idCard',
               align:'center',
-              minWidth: 150,
+          },
+          {
+              title: '手机号',
+              key: 'name',
+              align:'center',
           },
           {
               title: '报名类型',
               key: 'signType',
               align:'center',
-              minWidth: 80,
-          },
+          },          
           {
               title: '专业/课程',
               key: 'courseName',
               align:'center',
-              minWidth: 80,
+          },
+          {
+              title: '学历',
+              key: 'name',
+              align:'center',
+          },
+          {
+              title: '课程/专业编号',
+              key: 'name',
+              align:'center',
           },
           {
               title: '报读类型',
               key: 'applyType',
               align:'center',
-              minWidth: 80,
           },
           {
               title: '批次号',
               key: 'batchNo',
               align:'center',
-              minWidth: 80,
           },
           {
               title: '省份',
               key: 'address',
               align:'center',
-              minWidth: 100,
           },
           {
-              title: '在读高校名称',
-              key: 'schoolName',
+              title: '入学时间',
+              key: 'name',
               align:'center',
-              minWidth: 100,
           },
           {
-              title: '班主任',
-              key: 'teacherName',
+              title: '学校',
+              key: 'name',
               align:'center',
-              minWidth: 100,
           },
           {
-              title: '招生人员',
-              key: 'recruitorName',
+              title: '地址',
+              key: 'name',
               align:'center',
-              minWidth: 100,
           },
           {
-              title: '报名状态',
+              title: '操作',
               key: 'secondYearPaymentStatus',
               align:'center',
-              minWidth: 190,
-              fixed: 'right',
+              minWidth: 160,
               render: (h, params) => {
                 console.log(params.row.payStatus)
                 return h('div', [
@@ -219,7 +175,7 @@
                       },
                       on: {
                           click: () => {
-                              this.turnSite(params.row)
+                              this.getSite(params.row)
                           }
                       }
                   }, '转站点')
@@ -303,20 +259,12 @@
       recruit: '',
 
 
-      // 传入支付的数据
-      payData: {},
       // 请求参数
       parmas: {},
 
       dialogs: {
         isChangeClass: false,
-        isChangeSite: false,
-        pay: false
-      },
-      timer: null,
-
-      // 当前学生信息、
-      studentInfo: {},
+      }
 
       }
     },
@@ -346,12 +294,6 @@
           recruitorId: this.recruit == 0 ? '' : Number(this.recruit),
         };
         // this.getList(parmas);
-      },
-      changePages(){
-        
-        let page = this.page.page;
-        let pageSize = this.page.pageSize;
-        this.getList();
       }
     },
     watch:{
@@ -372,9 +314,8 @@
     },
     methods: {
       getList(){
-        let parmas = this.parmas;
+        let parmas = this.params;
         this.$ajaxPost(urls.GETEXTBYCONDITION, parmas).then(res => {
-          
           this.column_data = res.body.data;
           this.page.total = res.body.total;
         })  
@@ -453,81 +394,35 @@
           })        
         })
       },
-      // 关闭支付弹窗
-      payClose(){
-        this.dialogs.pay = false;
-      },
-      checkStatus(){
-        window.clearInterval(this.timer)
-        this.timer = setInterval(()=>{
-          this.$ajaxPostForm(urls.GETORDERSTATUS,{sn: this.payData.sn}).then(res => {
-            if(res.body == '支付成功'){
-              this.$message.success('支付成功')
-              this.getList();
-              clearInterval(this.timer)
-            }
-            if(res.body == '支付失败'){
-              this.$message.error('支付失败')
-               clearInterval(this.timer)
-            }
-          })
-        },10000)
-        
-      },
+
       // 支付
       pay(parmas){
         
-        let parma = [{
+        let parma = {
           idCard: parmas.idCard,
           majorNo: parmas.signTargetId,
           schoolId: parmas.schoolId,
-          signLevel: this.changeSignLevel(parmas.signLevel),
-          signType: this.changeSignType(parmas.signType),
+          signLevel: parmas.signLevel,
+          signType: parmas.signType,
           siteId: parmas.siteId,
-        }]
+        }
         
         this.$ajaxPost(urls.GETPAYMONEY,parma).then(res => {
-          
-          this.dialogs.pay = true; 
-          this.payData = res.body;
-        })        
-      },
-      // 转化signLevel
-      changeSignLevel(data){
-        let newData = ''
-        switch(data){
-          case '基础学': newData = 0;break;
-          case '智慧学': newData = 1;break;
-          case '专享学': newData = 2;break;
-        }
-        return newData
-      },
-      // 转化signLevel
-      changeSignType(data){
-        let newData = ''
-        switch(data){
-          case '课程': newData = 1;break;
-          case '专业': newData = 2;break;
-        }
-        return newData
+          debugger   
+          parmas.payStatus = '已支付'   
+        })
+        
       },
       // 转班
       turnClass(parmas){
-        
-        this.studentInfo = parmas;
         this.dialogs.isChangeClass = true;
       },
-      classClose(){
-        
-        this.dialogs.isChangeClass = false;
-      },
       // 转站点
-      turnSite(parmas){  
-        this.studentInfo = parmas;
-        this.dialogs.isChangeSite = true;      
-      },
-      chooseClassOrSite(id){
-
+      turnSite(parmas){        
+        this.$ajaxPost(urls.GETSITELIST, parmas).then(res => {
+          this.column_data = res.body;
+          this.page.total = res.body[0].count;
+        })
       },
 
       // 交互代码
@@ -549,9 +444,7 @@
       },
     },
     components:{
-      changeClass,
-      changeSite,
-      pay
+      changeClass
     }
   }
 </script>

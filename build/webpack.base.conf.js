@@ -13,7 +13,8 @@ var SRC_PATH = path.resolve(ROOT_PATH,'src');
 
 
 module.exports = {
-
+  // 方便调试 --找到正确的文件路径
+  devtool: '#source-map',
   //打包入口 也可直接用文件夹名字，默认找index.js
   entry: {
     app:  path.join(ROOT_PATH,'/main.js'),

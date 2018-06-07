@@ -6,6 +6,7 @@
 
 <template>
   <div class="mainRight">
+    <div class="displayNone">{{imState}}</div>
     <div class="topBar">
       <div class="menue">
         <div class="navChange">
@@ -38,14 +39,14 @@
             </Tooltip>
           </div>
           <div class="header-button">
-            <Dropdown>
+            <Dropdown @on-click='operUser'>
               <a href="javascript:void(0)">
                   {{userInfo.name}}
                   <Icon type="arrow-down-b"></Icon>
               </a>
               <DropdownMenu slot="list">
-                  <DropdownItem>个人中心</DropdownItem>
-                  <DropdownItem>退出登录</DropdownItem>
+                  <DropdownItem name='personal'>个人中心</DropdownItem>
+                  <DropdownItem name='exit'>退出登录</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -54,45 +55,21 @@
           </div>
         </div>
       </div>
-      <!-- <div class="bread">
-        <div class="bread_main">
-          <div class="bread_con" :style="{left: tagLeft + 'px'}">
-            <Tag type="dot" closable 
-                :color="$route.name ==item.name ? 'blue' : ''" 
-                v-for="(item, index) in routeTags" 
-                :key="index"
-                @on-close='closeTag(item)'>
-              {{item.meta.title}}
-            </Tag>
-          </div>
-        </div>
-        <Dropdown class="tag_oper">
-            <Button type="primary" size="small">
-                标签选项
-                <Icon type="arrow-down-b"></Icon>
-            </Button>
-            <DropdownMenu slot="list">
-                <DropdownItem>关闭所有</DropdownItem>
-                <DropdownItem>关闭其它</DropdownItem>
-            </DropdownMenu>
-        </Dropdown>
-      </div> -->
       <breadTags></breadTags>
     </div>
 
     <div class="content">
-      <!-- <div>11111111111111{{routeCurrent}}</div> -->
       <router-view></router-view>
     </div>
 
     <!-- 个人信息 -->
-    <chat v-if="dialogs.chat">
-    </chat>
+    <chat v-if="dialogs.chat" @close='closeChat'></chat>
 
   </div>
 </template>
 
 <script>
+import {urls} from '@Util/axiosConfig';
   import screenFull from 'screenfull'
   //加载相关依赖
   import breadTags from '@Components/breadTags';
@@ -105,12 +82,13 @@
       return {
         isFullScreen: screenFull.isFullscreen,
         showUnlock: false,
-        messageCount: 0,
+        // messageCount: 0,
         tagLeft: 0,
 
         littleNav: false,
+        messageCount: 0,
         dialogs: {
-          chat: true,
+          chat: false,
         }
       }
     },
@@ -118,9 +96,21 @@
       // 名字
       userInfo: state => state.login.userInfo,
 
+      // messageCount: state => state.chat.messageCount,
+
       // 面包屑
       routeCurrent: state => state.common.routeBread,
 
+      // imchange
+      imState(state){
+        // 最近会话
+        if(state.chat.messageCount != null){
+          this.messageCount = state.chat.messageCount;
+          
+        }
+        
+          
+      },
 
       showFullScreenBtn () {
         return window.navigator.userAgent.indexOf('MSIE') < 0 && screenFull.enabled
@@ -132,12 +122,19 @@
         this.tagLeft = -($('.ivu-tag').length * 110 - bread)
       }
       console.log(this.$store.state.common)
+      // 页面刷新--将最近联系人设置为空，否则未读消息数有问题，因为vuex有时候刷新了之后数据并没有丢失
       // debugger
       // this.$store.commit('common/setRouteTags',this.tags)
       
       
       screenFull.on('change', () => {
         this.isFullScreen = screenFull.isFullscreen
+      })
+
+      this.$nextTick(()=>{
+        let hei = document.body.clientHeight - 100;
+        $('.content').height(hei)
+        
       })
 
 
@@ -161,15 +158,40 @@
         this.$router.push({name: Cookies.get('last_page_name')})
       },
       showMessage () {
-        getRecentContactList()
-        if (this.$store.state.chat.chatModel) {
-          this.$store.state.chat.chatModel = false
-        }
-        this.$store.state.chat.chatModel = true
+        // debugger
+        this.dialogs.chat = !this.dialogs.chat;
+        // getRecentContactList()
+        // if (this.$store.state.chat.chatModel) {
+        //   this.$store.state.chat.chatModel = false
+        // }
+        // this.$store.state.chat.chatModel = true
+      },
+      closeChat(){
+        // debugger
+        this.dialogs.chat = !this.dialogs.chat;
       },
 
+      // 操作个人信息
+      operUser(name){
+        // 退出
+        if(name == 'exit'){
+          this.goOut();
+        }
+        // 个人中心
+        if(name == 'personal'){
 
-
+        }
+      },
+      goOut(){
+        let exit = this.$ajaxGet(urls.EXIT)
+        
+        exit.then(res => {
+            Cookies.remove('hxbToken');
+            this.$router.push({name: 'login'});
+          }).catch(error => {
+            this.$message.error(error)
+          })
+      }
     },
     components: {
       breadTags,

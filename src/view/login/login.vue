@@ -32,6 +32,7 @@
 import {urls} from '@Util/axiosConfig';
 import comUtil from '@Util/comUtil';
 import { mapState } from 'vuex';
+import { webimLogin } from '@Util/chat/login.js'
 export default {
   data() {
     return {
@@ -50,7 +51,9 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
+      // 登录成功获取个人信息
+      userInfo: {},
     };
   },
   mounted(){
@@ -88,8 +91,10 @@ export default {
             if(res){
               // 存cookie
               Cookies.set('hxbToken', res.body.token);
+              this.userInfo = res.body;
               // 基本信息存vuex
               this.$store.commit('login/setUserInfo', res.body);
+              localStorage.setItem('hxb_userInfo',JSON.stringify(res.body))
               this.getStudentList();
             }
           }).catch(error => {
@@ -106,7 +111,7 @@ export default {
         // 当前账户的学生列表存vuex
         this.$store.commit('common/setStudentList', res.body);
         // this.$store.state.studentList = response.data.body
-        // localStorage.setItem('studentList', JSON.stringify(response.data.body))
+        localStorage.setItem('hxb_studentList', JSON.stringify(res.body))
         // this.getMenu()
         // this.getNickNameAndAvatarInIm(response.data.body)
         this.getMenu()       
@@ -117,13 +122,31 @@ export default {
     },
     // 获取左侧导航菜单
     getMenu() {
-      this.$ajaxGet(urls.GET_MENU).then(res => {
+      this.$ajaxPost(urls.GET_MENU).then(res => {
+        // 登录成功--启动im
+        this.runIm()
         this.$store.commit('common/setMenu', res.body);
+        localStorage.setItem('hxb_menu',JSON.stringify(res.body))
         this.$router.push({name:'home'});
       }).catch(error => {
         console.log(error)
       })
     },
+    // 登录成功--启动im
+    runIm(){
+      let loginInfo = {
+        sdkAppID: '1400074469',
+        appIDAt3rd: '1400074469',
+        identifier: this.userInfo.uid.toString(),
+        identifierNick: this.userInfo.name,
+        headurl: this.userInfo.avatar,
+        accountType: 1,
+        userSig: this.userInfo.sign
+      }
+      this.$store.state.chat.loginInfo = loginInfo;
+      localStorage.setItem('hxb_imLoginInfo',JSON.stringify(loginInfo))
+      webimLogin(loginInfo, this)
+    }
   }
 };
 </script>

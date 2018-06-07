@@ -91,8 +91,33 @@ let post = function(url, params, btn){
   }
 }
 
+// post请求 formdata格式
+let postFormdata = function(url, params, btn){
+  let requestData = params ? qs.stringify(params) : {};
+  // 验证权限
+  if(validatePower(url)){
+    
+    return axios.post(url, requestData)
+            .then( (res) => {
+              if(btn){
+                btn.loading = false;
+              }
+              return resolveSuccessRes(res);
+            }).catch((error)=>{
+              if(btn){
+                btn.loading = false;
+              }              
+              resolveFailRes(error.response.status);
+            })
+  }else{
+    // 权限不足，跳转至登录页面
+    this.$router.push({name: 'login'});
+  }
+}
+
 // get请求
 let get = function(url, params, btn){
+  
   let requestData = params ? params : {};
   // 验证权限
   if(validatePower(url)){
@@ -122,5 +147,6 @@ axios.defaults.timeout = 25000;
 
 // ajax请求,挂在到Vue中
 Vue.prototype.$ajaxPost = post;
+Vue.prototype.$ajaxPostForm = postFormdata;
 Vue.prototype.$ajaxGet = get;
 

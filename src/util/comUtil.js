@@ -103,7 +103,7 @@ export default {
         mutationWay: mutationWay,
         state: state
       };
-        sessionStorage.setItem('vuexData', JSON.stringify(vuexData));
+        // sessionStorage.setItem('vuexData', JSON.stringify(vuexData));
     })
   },
 
@@ -123,6 +123,19 @@ export default {
       }
     })
     return flag;
+  },
+
+
+  dealChatTime(time){
+    
+    let currentTime = new Date();
+    currentTime = Moment(currentTime).format('YYYY-MM-DD');
+    let timeDay = Moment(time).format('YYYY-MM-DD');
+    if(currentTime == timeDay){
+      return time.split(' ')[1]
+    }else{
+      return time.split(' ')[0]
+    }
   }
 
 

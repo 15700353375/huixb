@@ -20,12 +20,15 @@ import Cookies from 'js-cookie'
 import registerAxios from '@Util/registerAxios';
 import clickOutside from '@Util/clickOutside';
 import comUtil from '@Util/comUtil';
-import { noTokenUrls } from '@Util/axiosConfig'
+import { noTokenUrls } from '@Util/axiosConfig';
+import webStorage from '@Util/webStorage';
 
+// im即时通讯
+import { webimLogin } from '@Util/chat/login'
+import '@Src/directive/comTools'
 Vue.use(Vuex);
 Vue.use(VueRouter);
 Vue.use(iView);
-
 
 // 引入Vuex配置文件
 const store = new Vuex.Store({
@@ -55,11 +58,47 @@ window._ = _;
 window.Moment = moment;
 window.app = app;
 window.Cookies = Cookies;
+// 全局提示，再次封装
+Vue.prototype.$message={
+  error(title, msg) {
+    app.$Notice.error({
+      title: title,
+      desc: msg ? msg : ''
+    });
+  },
+  success(title, msg) {
+    app.$Notice.success({
+      title: title,
+      desc: msg ? msg : ''
+    });
+  },
+  warning(title, msg) {
+    app.$Notice.warning({
+      title: title,
+      desc: msg ? msg : ''
+    });
+  },
+  info(title, msg) {
+    app.$Notice.info({
+      title: title,
+      desc: msg ? msg : ''
+    });
+  }
+}
 
+// 打开路由判断当前页面跳转路由
+let token = Cookies.get("hxbToken");
+if(!token){
+  app.$router.push({name: 'login'})
+}else{
+  webStorage.getStudentList()
+  webStorage.getMenu()
+  // app.$router.push({name: 'home'})
+}
 
 // 路由跳转之前，检测是否有token
 router.beforeEach((to, from, next) => {
-  // debugger
+  app.$Loading.start();
   let current = {
     parent: to.meta.parents,
     title: to.meta.title
@@ -87,10 +126,25 @@ router.beforeEach((to, from, next) => {
     let token = Cookies.get("hxbToken");
     if(token){
       next();
+      
     }else{
-      next({ path: '/' });
+      next({ path: '/login' });
     }
   }else{
     next();
   }
 })
+
+router.afterEach((to) => {
+  app.$Loading.finish();
+})
+
+
+// 页面刷新后重新登录im
+if (Cookies.get('hxbToken')) {
+  // 处理刷新之后vuex未清空问题
+  // app.$store.state.chat.messageCount = 0;
+  
+  let loginInfo = JSON.parse(localStorage.getItem('hxb_imLoginInfo'))
+  // webimLogin(loginInfo,app);
+}

@@ -1,8 +1,25 @@
+import Cookies from 'js-cookie'
+
+let token = Cookies.get("hxbToken");
+if(token){
+  var hxb_studentList = [];
+  var _hxb_studentList = localStorage.getItem('hxb_studentList');
+  
+  if(_hxb_studentList && _hxb_studentList.length){
+    hxb_studentList = JSON.parse(_hxb_studentList)
+  }
+  
+  var hxb_menu = localStorage.getItem('hxb_menu');
+  if(hxb_menu && hxb_menu.length){
+    hxb_menu = JSON.parse(hxb_menu)
+  }
+}
+
 const state = {
   // 学生列表
-  studentList: [],
+  studentList: hxb_studentList,
   // 导航菜单
-  menu: [],
+  menu: hxb_menu,
   // 是否显示小导航菜单
   littleNav: false,
   // 顶部路由面包屑
@@ -32,6 +49,7 @@ const getters = {
 const mutations = {
   // 设置学生列表
   setStudentList(state,studentList) {
+    // debugger
     // localStorage.setItem('studentList',studentList)
     state.studentList = studentList;
   },

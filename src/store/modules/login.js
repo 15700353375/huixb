@@ -1,6 +1,14 @@
+import Cookies from 'js-cookie'
+let userInfo
+if (!userInfo && Cookies.get('hxbToken')) {
+  userInfo = JSON.parse(localStorage.getItem('hxb_userInfo'))
+}
+
+
+
 const state = {
   // 登录用户信息
-  userInfo: {}
+  userInfo: userInfo
 };
 
 const getters = {};

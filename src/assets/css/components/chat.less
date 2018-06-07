@@ -9,100 +9,196 @@
     .ivu-modal-header{
       padding-bottom: 0px;
       border-bottom: 0px;    
+      background: #F6F8FB;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      display: none;
     }
     .ivu-modal-footer{
       display: none;
     }
     .ivu-modal-body{
       padding-top: 0px;
+      padding: 0px;
     }
   }
 
-
-  
+  .chat_content{
+    position: relative;
+    height: 726px;
+    .chat_close{
+      position: absolute;
+      font-size: 18px;
+      top: 20px;
+      right: 20px;
+      color: #5c6b77;
+      z-index: 99;
+      cursor: pointer;
+    }
+    .ivu-tabs-bar{
+      height: 60px;
+      padding-top: 23px;
+      background: #F6F8FB;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      margin-bottom: 0px;
+      .ivu-tabs-nav{
+        margin-left: 326px;
+      }
+    }
+  }
+  .ivu-tabs{
+    width: 100%;
+    height: 100%;
+  }
+  .ivu-tabs-content{
+    width: 100%;
+    height: 666px;
+  }
 }
 
-.chat_content{
-  position: relative;
-  height: 600px;
-}
-.ivu-tabs{
-  width: 100%;
-  height: 100%;
-}
-.ivu-tabs-content{
-  width: 100%;
-  height: 540px;
-}
+
 .chat_box{
   width: 100%;
   height: 100%;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  background: #fff;
   .chat_left{
-    width: 250px;
+    width: 340px;
     height: 100%;
     float: left;
-    background: #dddddd3b; 
-    box-shadow: 2px 0 5px #ddd;  
+    border-right: 1px solid #dddddd70;
+    // background: #dddddd3b; 
+    // box-shadow: 2px 0 5px #ddd;  
     .chat_left_tit{
       font-size: 16px;
-      padding: 10px 20px;   
-      height: 45px;
-      border-bottom: 1px solid #ddd;   
+      padding: 0px 20px;   
+      height: 58px;
+      line-height: 58px;
+      border-bottom: 1px solid #dddddd70;   
     }   
     .chat_left_search{
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
+      padding: 13px 20px;
+      height: 60px;
+      box-sizing: border-box;
+      border-bottom: 1px solid #dddddd70;
+      .ivu-select{
+        
+      }
+      .goback{
+        float: left;
+        line-height: 33px;
+        font-size: 14px;
+        color: #999;
+        cursor: pointer;
+      }
+      .ivu-checkbox-wrapper{
+        float: right;
+        margin-top: 5px;
+        font-size: 14px;
+        .ivu-checkbox{
+          float: right;
+          margin: 3px;
+        }
+        
+      }
     }
     .chat_left_list{
-        // padding: 0 10px;
+      height: 547px;
+      overflow-y: auto;
+      
         li{
-          height: 50px;
-          margin-top: 5px;
-          box-sizing: border-box;
-          padding: 0 10px;
-          cursor: pointer;
+          height: 70px;
+          box-sizing: border-box;        
+          
+          .chat_item{
+            height: 100%;
+            margin-left: 20px;
+            border-bottom: 1px solid #dddddd70;
+            box-sizing: border-box;
+            padding: 15px 15px 15px 0;
+          }
+          cursor: pointer;          
           &:hover{
-            background: #ddd;
+            background: #F6F8FB;
+          }
+          &.active{
+            background: #F6F8FB;
+          }
+
+          .ivu-badge{
+            width: 50px;
+            float: left;
           }
           img{
             width: 40px;
             height: 40px;
-            border-radius: 10px;
+            border-radius: 50%;
             float: left;
-            margin-top: 5px;
-            margin-right: 5px;
+            margin-right: 10px;
           }
           .people_con{
             height: 100%;
             overflow: hidden;
             .popple_top{
-              height: 25px;
+              height: 20px;
               .people_name{
                 font-size: 14px;
                 display:inline-block;
-                height: 25px;
-                line-height: 25px;
-                width: 100px;
+                height: 20px;
+                line-height: 20px;
+                width: 154px;
                 float: left;
                 overflow: hidden;
+                color: #666;
               }
               .people_timer{
-                width: 80px;
+                width: 90px;
                 float: right;
                 text-align: right;
                 font-size: 12px;
-                color: #999;
+                color: #BAC4D5;;
               }
             }
             .people_bottom{
               color: #999;
-              font-size: 13px;
+              font-size: 12px;
               line-height: 20px;
+              width: 254px;
+              color: #999;
+            }
+
+            .studentName{
+              font-size: 14px;
+              line-height:40px; 
+              width: 150px; 
+              float: left;
+            }
+            .ivu-checkbox-wrapper{
+              float: right;
+              margin-top: 10px;
+              .ivu-checkbox+span{
+                display: none;
+              }
+            }
+            span.chat{
+              float: right;
+              width: 40px;
+              height: 40px;
+              display: inline-block;
+              font-size: 16px;
+              line-height: 40px;
+              text-align: center;
+              color: #0070C9;
+              cursor: pointer;
             }
           }
         }
+    }
+
+    .chat_left_list.studentList{
+      li{
+        cursor: inherit;
+      }
     }
   }
 
@@ -112,21 +208,23 @@
   overflow: hidden;
   .chat_right_tit{
     font-size: 16px;
-    padding: 10px 20px;   
-    height: 45px;
-    border-bottom: 1px solid #ddd;   
+    padding: 0px 20px;   
+    height: 58px;
+    line-height: 58px;
+    border-bottom: 1px solid #dddddd70;   
   }
   .inChat_box{
-    width: 586px;
-    height: 345px;
+    width: 715px;
+    height: 466px;
     box-sizing: border-box;
-    margin: 10px 15px;
     position: relative;
+    overflow-y: auto;
     .inChat_list{
       position: absolute;
       left: 0;
-      width: 100%;
-      box-sizing: border-box;
+      width: 670px;
+      // box-sizing: border-box;
+      margin: 0 20px;
       overflow: hidden;
       height: auto;
       .inChat_list_item{
@@ -149,6 +247,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 5px;
+            font-size: 13px;
           }
         }
       }
@@ -172,25 +271,139 @@
   }
 
   .input_box{
-    height: 128px;
+    height: 142px;
     width: 100%;
     border-top: 1px solid #ddd;
     .input_menu{
       width: 100%;
       height: 30px;
-      background: #dddddd3b;
+      background: #F6F8FB;
     }
     textarea{
-      width: 596px;
+      width: 715px;
       margin: 0 10px;
       outline: none;
       resize: none;
-      height: 60px;
+      height: 76px;
       border: none;
       font-size: 14px;
     }
     .inChat_send{
       text-align: right;
+    }
+  }
+}
+
+
+
+// 表情窗口
+.input_menu{
+  position: relative;
+  .chat02_title_btn{
+    background: url('/static/chat/icon.png') no-repeat;
+    background-position: 3px -89px;
+    margin-left: 10px;
+    margin-top: 5px;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+  }
+  .chat02_title_btn.ctb02{
+    background-position: 3px -425px;
+  }
+  .wl_faces_box{
+    width: 400px;
+    height: 200px;
+    position: absolute;
+    bottom: 30px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-shadow: 2px 0 3px #ddd;
+    background: #fff;
+    display: none;
+    .wl_faces_content{
+      .title{
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        background: #dddddd3b;
+        padding: 0 10px;
+        ul{
+          li{
+            float: left;
+          }
+          li.wl_faces_close{
+            float: right;
+            span{
+              font-size: 16px;
+              color: #666;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+      .wl_faces_main{
+        width: 100%;
+        padding: 0 10px;
+        ul{
+          li{
+            float: left;
+          }
+        }
+      }
+    }  
+    
+  }
+}
+
+
+// 群发记录列表
+.chat_log{
+  .chat_log_left{
+    width: 620px;    
+    float: left;
+    border-right: 1px solid #dddddd70;   
+    .chat_left_tit{
+      font-size: 16px;
+      padding: 0px 20px;   
+      height: 58px;
+      line-height: 58px;
+      border-bottom: 1px solid #dddddd70;   
+    }  
+    .chat_left_list{
+      height: 608px;
+      overflow-y: auto;
+      li{
+        &:hover{
+          background: #F6F8FB;
+        }
+        .people_con{
+          height: 150px;
+          margin-left: 20px;
+          border-bottom: 1px solid #dddddd70;
+          padding: 20px 20px 18px 0;
+          .popple_top{
+            font-size: 13px;
+            color: #999;
+            .people_timer{
+              float: right;
+            }
+          }
+          .people_bottom{
+            height: 50px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+            line-height: 26px;
+          }
+          .lookList{
+            margin-top: 10px;
+            text-align: right;
+            font-size: 14px;
+            color: #0070C9;
+          }
+        }   
+      }
     }
   }
 }

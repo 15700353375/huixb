@@ -3,7 +3,8 @@
  * VER 1.7.0
  */
 import Cookies from 'js-cookie'
-import { SparkMD5 } from './spark-md5'
+import SparkMD5 from 'spark-md5'
+
 /* webim API definitions
  */
 var webim = { // namespace object webim
@@ -2034,6 +2035,7 @@ var webim = { // namespace object webim
                 var rspMsgCount = resp.MaxCnt;
                 var msgKey = resp.MsgKey;
                 var lastMsgTime = resp.LastMsgTime;
+                
 
                 if (resp.MsgList && resp.MsgList.length) {
                     for (var i in resp.MsgList) {
@@ -2790,7 +2792,8 @@ var webim = { // namespace object webim
                 var info = "\n request url: \n" + url + "\n request body: \n" + JSON.stringify(data) + "\n response: \n" + JSON.stringify(resp);
                 //成功
                 if (resp.ActionStatus == ACTION_STATUS.OK) {
-                    log.info("[" + type + "][" + cmd + "]success: " + info);
+                    
+                    // log.info("[" + type + "][" + cmd + "]success: " + info);
                     if (cbOk) cbOk(resp);//回调
                     errorCode = 0;
                     tempErrorInfo = '';
@@ -2955,6 +2958,7 @@ var webim = { // namespace object webim
             this._impl.curMaxMsgSeq = msg.seq;
         //自己发送的消息不计入未读数
         if (!msg.isSend && !this._impl.isAutoRead) {
+            
             this._impl.unread++;
         }
     };
@@ -3530,6 +3534,7 @@ var webim = { // namespace object webim
                     if (selSess._impl.type == SESSION_TYPE.C2C) {//私聊消息已读上报
                         var tmpC2CMsgReadedItem = [];
                         tmpC2CMsgReadedItem.push(new C2CMsgReadedItem(selSess._impl.id, selSess._impl.time));
+                        
                         //调用C2C消息已读上报接口
                         proto_c2CMsgReaded(MsgStore.cookie,
                             tmpC2CMsgReadedItem,

@@ -97,7 +97,9 @@
           let ind1 = _.findIndex(this.routeTags, function(item) { return item.name == 'home' });
           let ind2 = _.findIndex(this.routeTags, function(item) { return item.name == currentName; });
           newTags = this.routeTags.slice(ind1,1);
-          newTags.push(this.routeTags[ind2])
+          if(ind1 != ind2){
+            newTags.push(this.routeTags[ind2])
+          }          
           this.$router.push({name: currentName});
         }
         // console.log(newTags)
