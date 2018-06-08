@@ -13,9 +13,13 @@ export default {
 getStudentList(){
     
   app.$ajaxPost(urls.GET_STUDENT_LIST).then(res => {
-    // 当前账户的学生列表存vuex
-    app.$store.commit('common/setStudentList', res.body);
-    localStorage.setItem('hxb_studentList', JSON.stringify(res.body))
+    if(res){
+      // 当前账户的学生列表存vuex
+      app.$store.commit('common/setStudentList', res.body);
+      if(res.body && res.body.length){
+        localStorage.setItem('hxb_studentList', JSON.stringify(res.body))
+      }      
+    }
     
   })
 },
@@ -23,10 +27,16 @@ getStudentList(){
 // 获取左侧导航菜单
 getMenu() {
   app.$ajaxPost(urls.GET_MENU).then(res => {
-    app.$store.commit('common/setMenu', res.body);
-    localStorage.setItem('hxb_menu',JSON.stringify(res.body))
+    if(res){
+      app.$store.commit('common/setMenu', res.body);
+      if(res.body && res.body.length){
+        localStorage.setItem('hxb_menu',JSON.stringify(res.body))
+      }
+    }
   })
 },
+
+
 
 }
 

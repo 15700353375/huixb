@@ -85,9 +85,7 @@ export default {
           password: this.form.password
         }
         
-        let login = this.$ajaxPost(urls.LOGIN, parmas);        
-        if(login){
-          login.then((res) =>{
+         this.$ajaxPost(urls.LOGIN, parmas).then((res) =>{
             if(res){
               // 存cookie
               Cookies.set('hxbToken', res.body.token);
@@ -97,10 +95,7 @@ export default {
               localStorage.setItem('hxb_userInfo',JSON.stringify(res.body))
               this.getStudentList();
             }
-          }).catch(error => {
-            console.log(error)
-          })
-        }
+        });
 
       });
     },
@@ -108,28 +103,28 @@ export default {
     getStudentList () {
       
       this.$ajaxPost(urls.GET_STUDENT_LIST).then(res => {
-        // 当前账户的学生列表存vuex
-        this.$store.commit('common/setStudentList', res.body);
-        // this.$store.state.studentList = response.data.body
-        localStorage.setItem('hxb_studentList', JSON.stringify(res.body))
-        // this.getMenu()
-        // this.getNickNameAndAvatarInIm(response.data.body)
-        this.getMenu()       
+        if(res){
+          // 当前账户的学生列表存vuex
+          this.$store.commit('common/setStudentList', res.body);
+          // this.$store.state.studentList = response.data.body
+          localStorage.setItem('hxb_studentList', JSON.stringify(res.body))
+          // this.getMenu()
+          // this.getNickNameAndAvatarInIm(response.data.body)
+          this.getMenu()    
+        }   
         
-      }).catch(error => {
-        console.log(error)
       })
     },
     // 获取左侧导航菜单
     getMenu() {
       this.$ajaxPost(urls.GET_MENU).then(res => {
-        // 登录成功--启动im
-        this.runIm()
-        this.$store.commit('common/setMenu', res.body);
-        localStorage.setItem('hxb_menu',JSON.stringify(res.body))
-        this.$router.push({name:'home'});
-      }).catch(error => {
-        console.log(error)
+        if(res){
+          // 登录成功--启动im
+          this.runIm()
+          this.$store.commit('common/setMenu', res.body);
+          localStorage.setItem('hxb_menu',JSON.stringify(res.body))
+          this.$router.push({name:'home'});
+        }
       })
     },
     // 登录成功--启动im

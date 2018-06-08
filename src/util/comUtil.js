@@ -125,9 +125,8 @@ export default {
     return flag;
   },
 
-
-  dealChatTime(time){
-    
+  // 处理聊天侧边栏列表的时间
+  dealChatTime(time){    
     let currentTime = new Date();
     currentTime = Moment(currentTime).format('YYYY-MM-DD');
     let timeDay = Moment(time).format('YYYY-MM-DD');
@@ -136,7 +135,21 @@ export default {
     }else{
       return time.split(' ')[0]
     }
+  },
+
+  // 格式化导入内容的标题
+  dealExcelHeaders(arrs,arr_head){
+
+    let newArr = _.mapKeys(arrs, function(value, key) {
+      let ind = _.findIndex(arr_head,['title', key])
+      if(ind != -1){
+        key = arr_head[ind].key
+      }
+      return key
+    });
+    return newArr;
   }
+  
 
 
 }

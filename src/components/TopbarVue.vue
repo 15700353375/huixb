@@ -41,7 +41,7 @@
           <div class="header-button">
             <Dropdown @on-click='operUser'>
               <a href="javascript:void(0)">
-                  {{userInfo.name}}
+                  {{userInfo.name || ''}}
                   <Icon type="arrow-down-b"></Icon>
               </a>
               <DropdownMenu slot="list">
@@ -183,13 +183,11 @@ import {urls} from '@Util/axiosConfig';
         }
       },
       goOut(){
-        let exit = this.$ajaxGet(urls.EXIT)
-        
-        exit.then(res => {
-            Cookies.remove('hxbToken');
-            this.$router.push({name: 'login'});
-          }).catch(error => {
-            this.$message.error(error)
+        this.$ajaxGet(urls.EXIT).then(res => {
+            if(res){
+              Cookies.remove('hxbToken');
+              this.$router.push({name: 'login'});
+            }
           })
       }
     },

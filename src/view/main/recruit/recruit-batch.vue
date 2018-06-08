@@ -86,11 +86,11 @@
       getList(parmas){
         this.$ajaxGet(urls.MANAGERRECRUIT, parmas).then(res => {
           
-          this.column_data = res.body.data;
-          this.page.total = res.body.total;
-        }).catch(error => {
-           this.$message.error(error)
-        })        
+          if(res){
+            this.column_data = res.body.data;
+            this.page.total = res.body.total;
+          }
+        })    
       },
 
       // 分页相关

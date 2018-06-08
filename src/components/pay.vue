@@ -101,9 +101,6 @@
         this.isPay = false;
         this.$emit('payClose')
       },
-      weChat(){
-
-      }
     }
   }
 </script>

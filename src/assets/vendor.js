@@ -19,4 +19,6 @@ import './css/components/notification.less';
 import './css/components/table_list.less';
 import './css/components/select.less';
 import './css/components/pay.less';
+import './css/components/addStudent.less';
+import './css/components/studentDetail.less';
 

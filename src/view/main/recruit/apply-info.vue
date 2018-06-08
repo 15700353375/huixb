@@ -19,7 +19,7 @@
         <Option v-for="item in siteList" :value="item.siteId" :key="item.siteId">{{ item.siteName }}</Option>
       </Select>
 
-    <!-- 选择报名信息 -->
+      <!-- 选择报名信息 -->
       <Select v-model="registrationType" class="selcet_default" placeholder='请选择报名类型'>
         <Option v-for="item in registrationTypes" :value="item.value" :key="item.value">{{ item.label }}</Option>
       </Select>
@@ -53,37 +53,65 @@
         <Button type="primary" @click="addStudent">新增学生</Button>
         <Button type="primary" @click="exportStudent">导出</Button>
       </div>
-    </div>
 
+    </div>
+    
+    <!-- 表格数据 -->
     <Table class="hxb_table" 
             size='default' 
             min-width='1000'
             border 
             :columns="column_head" 
-            :data="column_data"></Table>
-    <!-- <div class="notData">暂无数据</div> -->
-    <Page show-sizer show-elevator show-total :total="page.total" :page-size='page.pageSize' @on-change='pageChange' @on-page-size-change='sizeChange'></Page>
+            :data="column_data">
+    </Table>
 
+    <!-- 导出表格数据 -->
+    <Table class="hxb_table displayNone"
+            ref="table" 
+            size='default' 
+            min-width='1000'
+            border 
+            :columns="column_head_export" 
+            :data="column_data_export">
+    </Table>
+
+    <!-- 分页信息 -->
+    <Page show-sizer show-elevator show-total 
+          :total="page.total" 
+          :page-size='page.pageSize' 
+          @on-change='pageChange' 
+          @on-page-size-change='sizeChange'>
+    </Page>
+
+    <!-- 支付 -->
+    <pay v-if="dialogs.pay" 
+        :payData='payData' 
+        @payClose='payClose' 
+        @checkStatus='checkStatus'>
+    </pay>
+
+    <!-- 转班 -->
     <changeClass v-if="dialogs.isChangeClass" 
                 :classTeacherList='classTeacherList' 
                 :studentInfo='studentInfo' 
                 @classClose='classClose'>
     </changeClass>
 
-    <!-- <changeSite v-if="dialogs.ischangeSite" 
-                :siteList='siteList' 
+    <!-- 转站点 -->
+    <changeSite v-if="dialogs.isChangeSite" 
                 :studentInfo='studentInfo' 
-                @siteClose='ischangeSite=false'>
-    </changeSite> -->
+                @siteClose='dialogs.isChangeSite=false'>
+    </changeSite>
     
-    <pay v-if="dialogs.pay" :payData='payData' @payClose='payClose' @checkStatus='checkStatus'></pay>
+    
+    
   </div>
 </template>
 
 <script>
   import {urls} from '@Util/axiosConfig';
   import { mapState } from 'vuex';
-  
+  import { registrationTypes } from '@Util/const';
   import changeClass from '@Components/changeClass';
   import changeSite from '@Components/changeSite';
   import pay from '@Components/pay';
@@ -96,7 +124,7 @@
           page: 1,
         },
 
-         column_head: [
+      column_head: [
           {
               title: '姓名',
               key: 'name',
@@ -165,7 +193,6 @@
               minWidth: 190,
               fixed: 'right',
               render: (h, params) => {
-                console.log(params.row.payStatus)
                 return h('div', [
                   h('Button', {
                       props: {
@@ -229,6 +256,11 @@
       ],
       column_data: [],
 
+      // 导出数据
+      column_head_export: [],
+      column_data_export: [],
+
+
       parmas: {
         batch_no: null,
         divide: null,
@@ -249,24 +281,7 @@
       site_id: '',
 
       // 报名类型
-      registrationTypes: [
-        {
-          label: '课程',
-          value: 1
-        },
-        {
-          label: '专业',
-          value: 2
-        },
-        {
-          label: '考证',
-          value: 3
-        },
-        {
-          value: 4,
-          label: '升学培训'
-        }
-      ],
+      registrationTypes: registrationTypes,
       registrationType: '',
 
       // 专业课程
@@ -336,10 +351,10 @@
           //分页信息
           page : this.page.page,
           pageSize : this.page.pageSize,
-          schoolId: this.site_id == 0 ? '' : Number(this.organization),
+          schoolId: this.organization == 0 ? '' : Number(this.organization),
           site_id: this.site_id == 0 ? '' : Number(this.site_id),
           signType: this.registrationType,
-          sign_target_id: this.course == 0 ? '' : Number(this.course),
+          sign_target_id: this.course == 0 ? '' : this.course,
           batch_no: this.batch == 0 ? '' : this.batch,
           divide: this.isClass,
           teacher_id: this.classTeacher == 0 ? '' : Number(this.classTeacher),
@@ -374,52 +389,59 @@
       getList(){
         let parmas = this.parmas;
         this.$ajaxPost(urls.GETEXTBYCONDITION, parmas).then(res => {
-          
-          this.column_data = res.body.data;
-          this.page.total = res.body.total;
+          if(res){
+            this.column_data = res.body.data;
+            this.page.total = res.body.total;
+          }          
         })  
       },
       // 获取机构
       getOrganization(){
         this.$ajaxPost(urls.GETALLSCHOOLLIST).then(res => {
-          this.organizationList = res.body;  
-          this.organizationList.unshift({
-            schoolId: 0,
-            schoolName: '全部'
-          })
+          if(res){
+            this.organizationList = res.body;  
+            this.organizationList.unshift({
+              schoolId: 0,
+              schoolName: '全部'
+            })
+          }
         })
       },
       
       // 获取批次号
       getBatch(){
         this.$ajaxPost(urls.GETBATCHLIST).then(res => {
-          let batchList = res.body;  
-          batchList.forEach(item =>{
-            this.batchList.push({
-              name: item,
-              id: item,
+          if(res){
+            let batchList = res.body;  
+            batchList.forEach(item =>{
+              this.batchList.push({
+                name: item,
+                id: item,
+              })
             })
-          })
-          this.batchList.unshift({
-            id: 0,
-            name: '全部'
-          })
+            this.batchList.unshift({
+              id: 0,
+              name: '全部'
+            })
+          }
         })
       },
 
       // 获取班主任-招生老师
       getTeacher(){
         this.$ajaxPost(urls.GETCONDITIONLIST).then(res => {          
-          this.classTeacherList = res.body.headTeacherList;  
-          this.recruitList = res.body.recruitList;  
-          this.classTeacherList.unshift({
-            uid: 0,
-            name: '全部'
-          })
-          this.recruitList.unshift({
-            uid: 0,
-            name: '全部'
-          })
+          if(res){
+            this.classTeacherList = res.body.headTeacherList;  
+            this.recruitList = res.body.recruitList;  
+            this.classTeacherList.unshift({
+              uid: 0,
+              name: '全部'
+            })
+            this.recruitList.unshift({
+              uid: 0,
+              name: '全部'
+            })
+          }
         })
       },
 
@@ -432,11 +454,13 @@
           schoolId: Number(schoolId)
         } 
         this.$ajaxPostForm(urls.GETSITELIST,parmas).then(res => {
-          this.siteList = res.body;  
-          this.siteList.unshift({
-            siteId: 0,
-            siteName: '全部'
-          })        
+          if(res){
+            this.siteList = res.body;  
+            this.siteList.unshift({
+              siteId: 0,
+              siteName: '全部'
+            })  
+          }      
         })
       },
 
@@ -446,11 +470,13 @@
           type: Number(type)
         } 
         this.$ajaxPostForm(urls.GETMAJORNAMEBYTYPE,parmas).then(res => {
-          this.courses = res.body;  
-          this.courses.unshift({
-            no: 0,
-            name: '全部'
-          })        
+          if(res){
+            this.courses = res.body;  
+            this.courses.unshift({
+              no: 0,
+              name: '全部'
+            }) 
+          }       
         })
       },
       // 关闭支付弹窗
@@ -488,8 +514,10 @@
         
         this.$ajaxPost(urls.GETPAYMONEY,parma).then(res => {
           
-          this.dialogs.pay = true; 
-          this.payData = res.body;
+          if(res){
+            this.dialogs.pay = true; 
+            this.payData = res.body;
+          }
         })        
       },
       // 转化signLevel
@@ -518,13 +546,16 @@
         this.dialogs.isChangeClass = true;
       },
       classClose(){
-        
         this.dialogs.isChangeClass = false;
       },
       // 转站点
       turnSite(parmas){  
         this.studentInfo = parmas;
-        this.dialogs.isChangeSite = true;      
+        this.dialogs.isChangeSite = true;   
+           
+      },
+      siteClose(){
+        this.dialogs.isChangeSite = false;
       },
       chooseClassOrSite(id){
 
@@ -533,11 +564,22 @@
       // 交互代码
       // 新增学生
       addStudent(){
-
+        this.$router.push({name:'sign-apply'})
       },
       // 导出学生
       exportStudent(){
-
+        let parmas = this.parmas;
+        parmas.pageSize = this.page.total;
+        this.$ajaxPost(urls.GETEXTBYCONDITION, parmas).then(res => {
+          this.column_data_export = res.body.data;
+          this.column_head_export = this.column_head;
+          this.column_head_export = this.column_head_export.filter((col, index) => index < 10);
+          this.$nextTick(()=>{
+            this.$refs.table.exportCsv({
+              filename: '学生报名信息'
+            })
+          })
+        });
       },
 
       // 分页相关

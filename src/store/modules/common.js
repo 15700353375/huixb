@@ -13,6 +13,20 @@ if(token){
   if(hxb_menu && hxb_menu.length){
     hxb_menu = JSON.parse(hxb_menu)
   }
+  let routeBread = [
+    {
+      meta: {title: '首页'},
+      path: '/home', 
+      name: 'home'
+    }
+  ]
+  var hxb_routeTags = JSON.parse(localStorage.getItem('hxb_routeTags'));
+  if(hxb_routeTags && hxb_routeTags.length){
+    hxb_routeTags = hxb_routeTags
+  }else{
+    hxb_routeTags = routeBread
+  }
+  
 }
 
 const state = {
@@ -28,13 +42,7 @@ const state = {
   flages: false,
 
   // 顶部浏览页
-  routeTags: [
-    {
-      meta: {title: '首页'},
-      path: '/home', 
-      name: 'home'
-    }
-  ],
+  routeTags: hxb_routeTags,
 
   
 };
@@ -67,6 +75,7 @@ const mutations = {
   },
   setRouteTags(state, routeTags){
     state.routeTags = routeTags;
+    localStorage.setItem('hxb_routeTags',JSON.stringify(routeTags))
   },
 };
 

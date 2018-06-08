@@ -73,10 +73,30 @@ export const urls = {
   // 转班
   UPDATETEACHERID: 'user-api/updateTeacherID',
 
+  // 转站点
+  CHANGESTUDENTSITE: 'user-api/changeStudentSite',
   
-  
-  
+  // 添加学生
+  ADDSTUDENTEXT: 'user-api/addStudentExt',
 
+  // 获取学生信息
+  GETSTUDENTEXTINFOBYCONDITION: 'user-api/getStudentExtInfoByCondition',
+
+  // 查看详情
+  FINDSTUDENTINFOBYIDCARDANDSIGNTARGETID: 'user-api/findStudentInfoByIdCardAndSignTargetId',
+
+  // 修改学生手机号
+  CHANGEMOBILE: 'user-api/changeMobile',
+  
+  // 教辅资料列表
+  GETRECEIVEBOOKLETINFO: 'user-api/getReceiveBookletInfo',
+  
+  // 获取相关筛选条件
+  GETBOOKLETDROPDOWNLIST: 'user-api/getBookletDropDownList',
+  
+  // 根据专业获取课程
+  GETCOURSELISTBYMAJORNO: 'user-api/getCourseListByMajorNo',
+  
 };
 
 // 不需要token的请求

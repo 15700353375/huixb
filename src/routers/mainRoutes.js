@@ -17,6 +17,9 @@ const applyInfo = r => require.ensure( [], () => r(require('@Src/view/main/recru
 const recruitBatch = r => require.ensure( [], () => r(require('@Src/view/main/recruit/recruit-batch')), 'recruitBatch');
 const signApply = r => require.ensure( [], () => r(require('@Src/view/main/recruit/signApply')), 'signApply');
 // 学生综合管理
+const student = r => require.ensure( [], () => r(require('@Src/view/main/student/student')), 'student');
+const studentInfo = r => require.ensure( [], () => r(require('@Src/view/main/student/student-info')), 'studentInfo');
+const teachingMaterials = r => require.ensure( [], () => r(require('@Src/view/main/student/teaching-materials')), 'teachingMaterials');
 
 export default [
   {
@@ -52,6 +55,27 @@ export default [
             name:'sign-apply',
             component: signApply,
           },
+
+        ]
+      },
+      {        
+        path: 'study',
+        meta: {icon: 'jt-teaching-materials', title: '学生综合管理', access: []},
+        component: student,
+        children: [          
+          {
+            path: 'student-info',
+            meta: {icon: 'jt-teaching-materials', parents: '学生综合管理', parentPath: 'study',  title: '学生信息', access: []},            
+            name:'student-info',
+            component: studentInfo
+          },
+          {
+            path: 'teaching-materials',
+            meta: {icon: 'jt-teaching-materials', parents: '学生综合管理', parentPath: 'study',  title: '教辅资料', access: []},            
+            name:'teaching-materials',
+            component: teachingMaterials
+          },
+          
 
         ]
       }

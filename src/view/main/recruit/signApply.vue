@@ -14,9 +14,11 @@
     <div class="table_select clearfix">
       <Button type="primary" @click="addStudent">添加单个学生</Button>
       <Button type="primary" @click="exportStudent">批量导入学生</Button>
-      <Button type="primary" @click="getList">下载模板</Button>
-      <Button type="primary" @click="getList">确认</Button>
-      <Button type="primary" @click="getList">返回</Button>
+      <!-- <Button type="primary" >下载模板</Button> -->
+      <a href="/static/zip/importStudentInfo.rar"  download="导入学生信息模板.rar" class="button"><Button type="primary">下载模板</Button></a>
+      <Button type="primary" @click='addAllstudent'>确认</Button>
+      <Button type="primary" >返回</Button>
+      <input id="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handkeFileChange">
     </div>
 
     <Table class="hxb_table" 
@@ -24,27 +26,26 @@
             border 
             :columns="column_head" 
             :data="column_data"></Table>
-    <!-- <div class="notData">暂无数据</div> -->
-    <Page show-sizer show-elevator show-total :total="page.total" :page-size='page.pageSize' @on-change='pageChange' @on-page-size-change='sizeChange'></Page>
-    <changeClass v-if="dialogs.isChangeClass"></changeClass>
+    
+
+    <!-- 新增学生 -->
+    <addStudent v-if="dialogs.isAddStudent" 
+                @addStudentClose='addStudentClose'>
+    </addStudent>
   </div>
 </template>
 
 <script>
   import {urls} from '@Util/axiosConfig';
+  import comUtil from '@Util/comUtil';
   import { mapState } from 'vuex';
-  
-  import changeClass from '@Components/changeClass';
+    // 引入xlsx
+  var XLSX = require('xlsx');
+  import addStudent from '@Components/addStudent';
   export default {
     data(){
       return {
-        page: {
-          total: 100,
-          pageSize: 10,
-          page: 1,
-        },
-
-         column_head: [
+        column_head: [
           {
               title: '姓名',
               key: 'name',
@@ -52,17 +53,17 @@
           },
           {
               title: '民族',
-              key: 'name',
+              key: 'nation',
               align:'center',
           },
           {
-              title: '身份证',
+              title: '身份证号',
               key: 'idCard',
               align:'center',
           },
           {
               title: '手机号',
-              key: 'name',
+              key: 'mobile',
               align:'center',
           },
           {
@@ -71,18 +72,18 @@
               align:'center',
           },          
           {
-              title: '专业/课程',
-              key: 'courseName',
+              title: '课程/专业',
+              key: 'signTargetName',
               align:'center',
           },
           {
               title: '学历',
-              key: 'name',
+              key: 'degree',
               align:'center',
           },
           {
               title: '课程/专业编号',
-              key: 'name',
+              key: 'signTargetId',
               align:'center',
           },
           {
@@ -97,29 +98,29 @@
           },
           {
               title: '省份',
-              key: 'address',
+              key: 'province',
               align:'center',
           },
           {
               title: '入学时间',
-              key: 'name',
+              key: 'entranceAt',
               align:'center',
           },
           {
               title: '学校',
-              key: 'name',
+              key: 'schoolName',
               align:'center',
           },
           {
-              title: '地址',
-              key: 'name',
+              title: '学校地址',
+              key: 'address',
               align:'center',
           },
           {
               title: '操作',
-              key: 'secondYearPaymentStatus',
+              // key: 'secondYearPaymentStatus',
               align:'center',
-              minWidth: 160,
+              minWidth: 100,
               render: (h, params) => {
                 console.log(params.row.payStatus)
                 return h('div', [
@@ -127,7 +128,6 @@
                       props: {
                           type: 'primary',
                           size: 'small',
-                          disabled: params.row.payStatus == '已支付' ? true : false,
                       },
                       style: {
                           marginRight: '5px'
@@ -135,25 +135,13 @@
                       on: {
                         click: (val) => {
                           
-                            // this.pay(params.index)
-                            this.$Modal.confirm({
-                                title: '提示',
-                                content: '<p>此操作将支付费用, 是否继续?</p>',
-                                // okText: '是',
-                                onOk: () => {
-                                  setTimeout(() => {
-                                      this.$Modal.remove();
-                                      
-                                      this.pay(params.row)
-                                  }, 1000);
-                              }
-                            });
+                        
                         }
                       }
-                  }, params.row.payStatus),
+                  }, '编辑'),
                   h('Button', {
                       props: {
-                          type: 'primary',
+                          type: 'error',
                           size: 'small'
                       },
                       style: {
@@ -161,28 +149,15 @@
                       },
                       on: {
                           click: () => {
-                              this.turnClass(params.row)
+                              // this.turnClass(params.row)
                           }
                       }
-                  }, '转班'),
-                  h('Button', {
-                      props: {
-                          type: 'primary',
-                          size: 'small'
-                      },
-                      style: {
-                          marginRight: '5px'
-                      },
-                      on: {
-                          click: () => {
-                              this.getSite(params.row)
-                          }
-                      }
-                  }, '转站点')
+                  }, '删除'),
                 ]);
             }
           }
       ],
+
       column_data: [],
 
       parmas: {
@@ -263,35 +238,21 @@
       parmas: {},
 
       dialogs: {
-        isChangeClass: false,
+        isAddStudent: false,
       }
 
       }
     },
     mounted(){
       // 获取默认筛选条件
-      this.getOrganization();
-      this.getBatch();
-      this.getTeacher();
-
-      // 获取列表
-      this.getList();
+      
     },
     computed:{
 
       changeParmas(){
         this.parmas = {
           //分页信息
-          page : this.page.page,
-          pageSize : this.page.pageSize,
-          schoolId: this.site_id == 0 ? '' : Number(this.organization),
-          site_id: this.site_id == 0 ? '' : Number(this.site_id),
-          signType: this.registrationType,
-          sign_target_id: this.course == 0 ? '' : Number(this.course),
-          batch_no: this.batch == 0 ? '' : this.batch,
-          divide: this.isClass,
-          teacher_id: this.classTeacher == 0 ? '' : Number(this.classTeacher),
-          recruitorId: this.recruit == 0 ? '' : Number(this.recruit),
+    
         };
         // this.getList(parmas);
       }
@@ -299,152 +260,110 @@
     watch:{
       organization(curVal, oldVal){
         if(curVal){
-          this.getSite(curVal)
+          
         }else{
           this.siteList = this.siteList.splice(0,1);
         }
       },
       registrationType(curVal, oldVal){
         if(curVal){
-          this.getCourses(curVal)
+
         }else{
           this.courses = this.courses.splice(0,1);
         }
       }
     },
     methods: {
-      getList(){
-        let parmas = this.params;
-        this.$ajaxPost(urls.GETEXTBYCONDITION, parmas).then(res => {
-          this.column_data = res.body.data;
-          this.page.total = res.body.total;
-        })  
-      },
-      // 获取机构
-      getOrganization(){
-        this.$ajaxPost(urls.GETALLSCHOOLLIST).then(res => {
-          this.organizationList = res.body;  
-          this.organizationList.unshift({
-            schoolId: 0,
-            schoolName: '全部'
-          })
-        })
-      },
-      
-      // 获取批次号
-      getBatch(){
-        this.$ajaxPost(urls.GETBATCHLIST).then(res => {
-          let batchList = res.body;  
-          batchList.forEach(item =>{
-            this.batchList.push({
-              name: item,
-              id: item,
-            })
-          })
-          this.batchList.unshift({
-            id: 0,
-            name: '全部'
-          })
-        })
-      },
 
-      // 获取班主任-招生老师
-      getTeacher(){
-        this.$ajaxPost(urls.GETCONDITIONLIST).then(res => {          
-          this.classTeacherList = res.body.headTeacherList;  
-          this.recruitList = res.body.recruitList;  
-          this.classTeacherList.unshift({
-            uid: 0,
-            name: '全部'
-          })
-          this.recruitList.unshift({
-            uid: 0,
-            name: '全部'
-          })
-        })
-      },
-
-
-
-
-      // 获取站点
-      getSite(schoolId){
-        let parmas ={
-          schoolId: Number(schoolId)
-        } 
-        this.$ajaxPostForm(urls.GETSITELIST,parmas).then(res => {
-          this.siteList = res.body;  
-          this.siteList.unshift({
-            siteId: 0,
-            siteName: '全部'
-          })        
-        })
-      },
-
-      // 获取专业、课程
-      getCourses(type){
-        let parmas ={
-          type: Number(type)
-        } 
-        this.$ajaxPostForm(urls.GETMAJORNAMEBYTYPE,parmas).then(res => {
-          this.courses = res.body;  
-          this.courses.unshift({
-            no: 0,
-            name: '全部'
-          })        
-        })
-      },
-
-      // 支付
-      pay(parmas){
-        
-        let parma = {
-          idCard: parmas.idCard,
-          majorNo: parmas.signTargetId,
-          schoolId: parmas.schoolId,
-          signLevel: parmas.signLevel,
-          signType: parmas.signType,
-          siteId: parmas.siteId,
-        }
-        
-        this.$ajaxPost(urls.GETPAYMONEY,parma).then(res => {
-          debugger   
-          parmas.payStatus = '已支付'   
-        })
-        
-      },
-      // 转班
-      turnClass(parmas){
-        this.dialogs.isChangeClass = true;
-      },
-      // 转站点
-      turnSite(parmas){        
-        this.$ajaxPost(urls.GETSITELIST, parmas).then(res => {
-          this.column_data = res.body;
-          this.page.total = res.body[0].count;
-        })
-      },
 
       // 交互代码
       // 新增学生
       addStudent(){
+        this.dialogs.isAddStudent = true;
+      },
 
+      addStudentClose(){
+        this.dialogs.isAddStudent = false;
       },
       // 导出学生
       exportStudent(){
-
+        document.getElementById('excel-upload-input').click()
+      },
+      // 批量添加学生
+      addAllstudent(){
+        let parmas = this.column_data;
+        this.$ajaxPost(urls.ADDSTUDENTEXT,parmas).then(res => {
+          if(res){
+            this.$message.success('添加成功')
+          }          
+        })
       },
 
-      // 分页相关
-      pageChange(page){
-        this.page.page = page;
+      handkeFileChange (e) {
+        debugger
+        // this.loading = true
+        const files = e.target.files
+        const itemFile = files[0] // only use files[0]
+        const reader = new FileReader()
+        reader.onload = e => {
+          const data = e.target.result
+          const fixedData = this.fixdata(data)
+          const workbook = XLSX.read(btoa(fixedData), {type: 'base64'})
+          const firstSheetName = workbook.SheetNames[0]
+          const worksheet = workbook.Sheets[firstSheetName]
+          const header = this.get_header_row(worksheet)
+          const results = XLSX.utils.sheet_to_json(worksheet)
+          
+          this.generateDate({header, results})
+          document.getElementById('excel-upload-input').value = ''
+        }
+        reader.readAsArrayBuffer(itemFile)
       },
-      sizeChange(size){
-        this.page.pageSize = size;        
+      generateDate ({header, results}) {
+        let new_result = [];
+        results.forEach(item => {
+          new_result.push(comUtil.dealExcelHeaders(item,this.column_head));
+        })
+        // results = comUtil.dealExcelHeaders(results,this.column_head);
+        this.column_data = new_result;
+        // debugger
+        // this.excelData.header = header
+        // this.excelData.results = comUtil.dealExcelHeaders(results,column_head);
+        // debugger
+        // this.loading = false
+        // for (let i in this.excelData.results) {
+        //   this.excelData.results[i].isWrite = true
+        //   this.batch.push(this.excelData.results[i])
+        // }
+        // this.hasEditBatch = false
+      },      
+      fixdata (data) {
+        let o = ''
+        let l = 0
+        const w = 10240
+        for (; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)))
+        o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)))
+        return o
       },
+      get_header_row (sheet) {
+        const headers = []
+        const range = XLSX.utils.decode_range(sheet['!ref'])
+        let C
+        const R = range.s.r
+        /* start in the first row */
+        for (C = range.s.c; C <= range.e.c; ++C) { /* walk every column in the range */
+          var cell = sheet[XLSX.utils.encode_cell({c: C, r: R})]
+          /* find the cell in the first row */
+          var hdr = 'UNKNOWN ' + C // <-- replace with your desired default
+          if (cell && cell.t) hdr = XLSX.utils.format_cell(cell)
+          headers.push(hdr)
+        }
+        return headers
+      },
+
     },
     components:{
-      changeClass
+      addStudent
     }
   }
 </script>

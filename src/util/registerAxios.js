@@ -45,7 +45,6 @@ function resolveSuccessRes(res){
   }else{
     // 表示网络正常，服务器拒绝
     window.app.$message.error(res.data.message);
-    return res.data;
   }
 }
 
@@ -82,8 +81,12 @@ let post = function(url, params, btn){
             }).catch((error)=>{
               if(btn){
                 btn.loading = false;
-              }              
-              resolveFailRes(error.response.status);
+              }     
+              if(error.response){
+                resolveFailRes(error.response.status);
+              }else{
+                window.app.$message.error('服务器错误，请稍后重试');
+              }
             })
   }else{
     // 权限不足，跳转至登录页面
@@ -107,7 +110,11 @@ let postFormdata = function(url, params, btn){
               if(btn){
                 btn.loading = false;
               }              
-              resolveFailRes(error.response.status);
+              if(error.response){
+                resolveFailRes(error.response.status);
+              }else{
+                window.app.$message.error('服务器错误，请稍后重试');
+              }
             })
   }else{
     // 权限不足，跳转至登录页面
@@ -131,7 +138,11 @@ let get = function(url, params, btn){
                   if(btn){
                     btn.loading = false;
                   }
-                  resolveFailRes(error.response.status);
+                  if(error.response){
+                    resolveFailRes(error.response.status);
+                  }else{
+                    window.app.$message.error('服务器错误，请稍后重试');
+                  }
                 })
   }else{
     // 权限不足，跳转至登录页面

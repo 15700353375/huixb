@@ -6,17 +6,22 @@
  -->
 
 <template>
-<Modal
+<div v-if="isChangeClass">
+  <Modal
     class-name="vertical-center-modal"
     title="转班"
     width='350'
     v-model="isChangeClass"
-    @on-cancel='close'
-    @on-ok='changeClass'>
+    @on-cancel='close'>
     <Select v-model="currentClass" style="width:200px">
       <Option v-for="item in classTeacherList" :value="item.uid" :key="item.uid">{{ item.name }}</Option>
     </Select>
+    <div slot="footer">
+        <Button size="large"  @click="close">取消</Button>
+        <Button type="primary" size="large"  @click="changeClass">确定</Button>
+    </div>
 </Modal>
+</div>
 </template>
 
 
@@ -38,6 +43,7 @@
       
     },
     methods: {
+
       changeClass(){
         let currentClass = this.currentClass;
         
@@ -53,9 +59,11 @@
           teacherId: this.classTeacherList[ind].uid,        
         }
         this.$ajaxPostForm(urls.UPDATETEACHERID,parmas).then(res => {
-          if(res.body == 'true'){
+          if(res.body == true){
             this.$message.success('转班成功')
-          }          
+            this.$emit('classClose')    
+          }     
+           
         })
         // this.$emit('classClose')
       },
